@@ -1,3 +1,113 @@
-h1 {
-    color: red;
+:root {
+}
+
+h2 {
+    text-align: center;
+}
+
+
+
+.holder {
+    display: flex;
+    flex-direction: row;
+}
+.block {
+    display: flex;
+    flex-direction: column;
+    background: gray;
+    width: var(--width);
+    height: var(--height);
+    position: relative;
+    z-index: 1;
+}
+
+.generate * {
+    display: inline-block;
+}
+.main {
+    display: flex;
+}
+#documents {
+    width: 20%;
+    Overflow-y: scroll;
+    height: 80vh;
+}
+
+
+#documents div {
+    display: flex;
+    flex-direction: row;
+}
+#documents div .delete {
+    /* display */
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    margin: 10px;
+    margin-left: 0px;
+    padding: 5px;
+    height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+    background-color: #3498DB;
+    cursor: pointer;
+    border-radius: 5px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+#documents div .name::before {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 35px;
+    background-color: black;
+    margin-left: 8.5%;
+}
+#documents div .name {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    margin: 10px;
+    margin-right: 0px;
+    height: 30px;
+    padding: 5px;
+    width: 110px;
+
+    background-color: #3498DB;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+#documents div div:hover {
+    background-color: #2980B9;
+}
+
+
+.container {
+    position: relative;
+    width: 1000px;
+    height: 500px;
+}
+
+#canvas1 {
+    position: absolute;
+    background: lightgray;
+    height: 100%;  
+    width: 100%;
+    opacity: 1;
+}
+
+#canvas-draw {
+    position: absolute;
+    background: lightgreen;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 1;
 }

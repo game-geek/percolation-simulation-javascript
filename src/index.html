@@ -4,9 +4,45 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Percolation Simulation</title>
+    <!-- <link rel="stylesheet"  href="styles.css"> -->
 </head>
 <body>
-    <h1>hello</h1>
+    <h2>Welcome to the percolation simulation.</h2>
+    <div>
+        <div class="generate">
+            <form id="update-density">
+                <label for="density">enter the density</label>
+                <input type="text" name="density">
+                <button id="update">update</button>
+            </form>
+            <button id="add">add</button>
+            <button id="draw">draw</button>
+            <button id="type">remove pixel</button>
+            <button id="restart"> restart </button>
+            <button id="pause">pause</button>
+            <button id="step">step</button>
+            <div class="slider">
+                <input type="range", min="5", max="1000" value="10">
+                <div>10</div>
+            </div>
+        </div>
+        <div class="reveal">
+            <form id="toggle-show">
+                <label for="show">Auto Show</label>
+                <input type="checkbox" name="show" checked>
+            </form>
+            <button class="show">show</button>
+        </div>
+    </div>
+    <section class="main">
+        <div id="documents">
+        </div>
+        <div class="container">
+            <div id="canvas1"></div>
+            <div id="canvas-draw"></div>
+        </div>
+    </section>
+    <script src="https://kit.fontawesome.com/496c086401.js" crossorigin="anonymous"></script>
 </body>
 </html>
