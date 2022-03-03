@@ -1,4 +1,3 @@
-import print from "./print";
 
 class canvasManager {
     constructor(canvas, root, size={width: 100, height: 50}){
@@ -27,10 +26,8 @@ class canvasManager {
         this.DomArrayPointer = bigArray;
     }
     resizeCanvas(){
-        print(this.canvas.clientHeight, this.canvas.clientWidth);
         this.root.style.setProperty('--height', `${this.canvas.clientHeight/(50)}px`);
         this.root.style.setProperty('--width', `${this.canvas.clientWidth/(100)}px`);
-        print("window resized");
     }
     generate_grid(){
         let html = "";

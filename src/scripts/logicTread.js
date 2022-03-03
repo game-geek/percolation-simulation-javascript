@@ -1,5 +1,5 @@
 class logicTread {
-    constructor(x, y, gridPointer, DomArrayPointer, size={width:100, height: 50}, first=false, fromTread, fromTreadAt, addFirst=false, init=true) {
+    constructor(x, y, gridPointer, DomArrayPointer, size={width:100, height: 50}, first=false, fromTread, fromTreadAt, addFirst=false, init=true, coloredLines) {
         this.x = x;
         this.y = y;
         this.gridPointer = gridPointer;
@@ -7,6 +7,7 @@ class logicTread {
         this.width = size.width;
         this.height = size.height;
         this.blocked = false;
+        this.coloredLines = coloredLines;
         this.color = this.getRandomColor();
         this.first = first;
         if (!first){
@@ -32,10 +33,14 @@ class logicTread {
         }
     }
     getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
+        if (this.coloredLines.state) {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+            }
+        } else {
+            var color = "blue";
         }
         return color;
       }

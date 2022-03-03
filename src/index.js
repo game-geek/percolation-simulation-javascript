@@ -1,12 +1,12 @@
 import "./styles.css";
 import canvasManager from "./scripts/canvas";
-import print from "./scripts/print";
 import randomGenerator from "./scripts/generator";
 import canvasLoader from "./scripts/loader";
 import pathFinder from "./scripts/pathFinder2";
 import documentManager from "./scripts/documents";
 
-
+//slim loading
+import "./scripts/slimLoading";
 
 // get references to the DOM
 const root = document.querySelector(':root');
@@ -24,21 +24,24 @@ const pauseButton = document.querySelector("#pause");
 const stepButton = document.querySelector("#step");
 const slider = document.querySelector(".slider input");
 const sliderInfo = document.querySelector(".slider div");
+const lines = document.querySelector("#lines");
+const showStep = document.querySelector("#show-step");
+const toolTipActivateButton = document.querySelector("#reactivate");
+const pressure = document.querySelector("#pressure");
 
 // create the instances
+// color of the empty blocks
+let color = "rgb(184, 184, 184)";
+let coloredLines = {state: false};
 const canvasmanager = new canvasManager(canvas, root);
 const generator = new randomGenerator();
 const loader = new canvasLoader(canvasmanager);
-const pathfinder = new pathFinder(canvasmanager);
+const pathfinder = new pathFinder(canvasmanager, coloredLines, color);
 
 
 
 
 /////to do
-// update the document
-//delete a document
-// the ui bar in the document doesnt resize properly on diferent window dimensions
-//suites
 //ui
 
 
@@ -51,6 +54,7 @@ let autoFind = toggleShow.show.checked;
 // instances who takes these variables
 // a few settings
 let found = false;
+let at = 0;
 let reset = false;
 let pause = false;
 let step = false;
@@ -62,7 +66,7 @@ const documentmanager = new documentManager(updateAddform, documents, canvasmana
 //generate a random grid
 documentmanager.addDocument(25);
 // set it to the current grid
-documentmanager.currentGrid = documentmanager.grids[documents.children[0].children[0].getAttribute("grid")];
+documentmanager.setGrid(documents.children[0].children[0].getAttribute("grid"));
 
 // load the grid in the window
 loader.load(documentmanager.currentGrid);
@@ -73,13 +77,19 @@ pathfinder.init();
 // function a=that will call itself over and over until finished
 function find() {
     if (reset) {
+        at = 0;
+        showStep.textContent = `step : ${at}`;
         reset = false;
         return;
     }
     if (!pause) {
+        at ++;
+        showStep.textContent = `step : ${at}`;
         found = pathfinder.step();
     } else {
         if (pause && step) {
+            at ++;
+            showStep.textContent = `step : ${at}`;
             found = pathfinder.step();
         }
     }
@@ -87,7 +97,8 @@ function find() {
     if (!found){
         setTimeout(find, delay);
     } else if (autoFind){
-        pathfinder.findShortestPath();
+        let points = pathfinder.findShortestPath();
+        pressure.textContent = `Pressure : ${Number(points.bottom.length / points.top.length).toFixed(2)}`;
     }
 }
 setTimeout(find, delay);
@@ -97,6 +108,20 @@ setTimeout(find, delay);
 
 
 ////////////////////////////////////Extra User Input//////////////////
+
+toolTipActivateButton.addEventListener("click", event => {
+    localStorage.setItem("loaded", 0);
+})
+
+lines.addEventListener("click", event => {
+    if (coloredLines.state) {
+        coloredLines.state = false;
+        event.target.textContent = "lines : normal";
+    } else {
+        coloredLines.state = true;
+        event.target.textContent = "lines : colored";
+    }
+})
 
 // sets the delay depending on the slider
 slider.oninput = () => {
@@ -131,6 +156,8 @@ restartButton.addEventListener("click", event => {
     if (!found){
         reset = true;
     } else {
+        at = 0;
+        showStep.textContent = `step : ${at}`;
         found = false;
     }
     pathfinder.reset();
@@ -155,7 +182,8 @@ toggleShow.addEventListener("click", event => {
 // show the shortest path
 showButton.addEventListener("click", () => {
     if (pathfinder.running === false) {
-        pathfinder.findShortestPath();
+        let points = pathfinder.findShortestPath();
+        pressure.textContent = `Pressure : ${Number(points.bottom.length / points.top.length).toFixed(2)}`;
     }
 })
 
@@ -168,7 +196,6 @@ showButton.addEventListener("click", () => {
 
 // saves the changes
 function modify(x, y) {
-    console.log(canvasmanager)
     if (!removeBlock) {
             
         canvasmanager.DomArrayPointer[y][x].style.backgroundColor = "black";
@@ -235,6 +262,8 @@ draw.addEventListener("click", event => {
         if (!found){
             reset = true;
         } else {
+            at = 0;
+            showStep.textContent = `step : ${at}`;
             found = false;
         }
         pathfinder.reset();
@@ -264,13 +293,17 @@ updateAddform.addEventListener("submit", event => {
     // prevent default
     event.preventDefault();
     //generate a random grid
-    documentmanager.currentGrid = documentmanager.getGrid(documentmanager.addGrid())
+    documentmanager.regenerateCurrentGrid(updateAddform.density.value);
+    // reset the document density label
+    Array.from(documents.children)[documentmanager.selectedDocument].children[0].textContent = `density : ${updateAddform.density.value}`;
     // load the grid in the window
     loader.load(documentmanager.currentGrid);
     // reset the algorithm 
     if (!found){
         reset = true;
     } else {
+        at = 0;
+        showStep.textContent = `step : ${at}`;
         found = false;
     }
     pathfinder.reset();
@@ -285,39 +318,104 @@ updateAddform.addEventListener("submit", event => {
 documents.addEventListener("click", event => {
     if (event.target.getAttribute("grid")){    
         // load the grid in the window
-        console.log(event.target.getAttribute("grid"), documentmanager.grids)
-        console.log(documentmanager.grids[event.target.getAttribute("grid")])
-        documentmanager.currentGrid = documentmanager.grids[event.target.getAttribute("grid")]; // get the uuuid
+        documentmanager.setGrid(event.target.getAttribute("grid")); // get the uuuid
+        documentmanager.selectedDocument = Number(event.target.parentElement.getAttribute("document"));
         loader.load(documentmanager.currentGrid); // passing a pointer
         // reset the algorithm 
         if (!found){
             reset = true;
         } else {
+            at = 0;
+            showStep.textContent = `step : ${at}`;
             found = false;
         }
         pathfinder.reset();
         // restart the algo
         pathfinder.init();
         setTimeout(find, delay);
-    } else if (event.target.parentElement.classList.contains("delete")){
-        event.target.parentElement.parentElement.remove();
-        console.log("item deleted")
-    } else if (event.target.classList.contains("delete")) {
-        event.target.parentElement.remove();
-        console.log("item deleted")
+    } else if (documents.children.length > 1) {
+        if (event.target.parentElement.classList.contains("delete")){
+            // remove it technically
+            let currentUuid = event.target.parentElement.parentElement.children[0].getAttribute("grid");
+            let to_show = event.target.parentElement.parentElement.parentElement.children[0].children[0].getAttribute("grid");
+            if (currentUuid != to_show)
+            {
+                documentmanager.deleteDocument(
+                    currentUuid,
+                    to_show
+                ) 
+                documentmanager.selectedDocument = 0;
+            } else {
+                documentmanager.deleteDocument(
+                    currentUuid,
+                    event.target.parentElement.parentElement.parentElement.children[1].children[0].getAttribute("grid")
+                ) 
+                documentmanager.selectedDocument = 1;
+            }
+            
+            // remove it visually
+            event.target.parentElement.parentElement.remove();
+            ////////////////////////////////////////////////////
+            // load the first document as default 
+            loader.load(documentmanager.currentGrid); // passing a pointer
+            // reset the algorithm 
+            if (!found){
+                reset = true;
+            } else {
+                at = 0;
+                showStep.textContent = `step : ${at}`;
+                found = false;
+            }
+            pathfinder.reset();
+            // restart the algo
+            pathfinder.init();
+            setTimeout(find, delay);
+            //////////////////////////////////////////////////
+        } else if (event.target.classList.contains("delete")) {
+            // remove it technically
+            let currentUuid = event.targett.parentElement.children[0].getAttribute("grid");
+            let to_show = event.target.parentElement.parentElement.children[0].children[0].getAttribute("grid");
+            if (currentUuid != to_show)
+            {
+                documentmanager.deleteDocument(
+                    currentUuid,
+                    to_show
+                ) 
+                documentmanager.selectedDocument = 0;
+            } else {
+                documentmanager.deleteDocument(
+                    currentUuid,
+                    event.target.parentElement.parentElement.children[1].children[0].getAttribute("grid")
+                ) 
+                documentmanager.selectedDocument = 1;
+            }
+            // remove it visually
+            event.target.parentElement.remove();
+            ////////////////////////////////////////////////////
+            // load the first document as default 
+            loader.load(documentmanager.currentGrid); // passing a pointer
+            // reset the algorithm 
+            if (!found){
+                reset = true;
+            } else {
+                at = 0;
+                showStep.textContent = `step : ${at}`;
+                found = false;
+            }
+            pathfinder.reset();
+            // restart the algo
+            pathfinder.init();
+            setTimeout(find, delay);
+            //////////////////////////////////////////////////
+        }
     }
 });
 
 // add event listener when add grid
 add.addEventListener("click", event => {
     if (updateAddform.density.value){
-        let uuid = documentmanager.addGrid(updateAddform.density.value);
-        documents.innerHTML += `
-            <div>
-                <div grid="${uuid}" class="name">density : ${updateAddform.density.value}</div>
-                <div class="delete"><i class="fa-solid fa-trash-can"></i></div>
-            </div>
-        `;
+        // generate and add a new grid
+        let uuid = documentmanager.addDocument(updateAddform.density.value);
         updateAddform.reset();
     }
 })

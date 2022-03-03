@@ -1,7 +1,8 @@
 
 class canvasLoader {
-    constructor(canvasManager){
+    constructor(canvasManager, color){
         this.canvasManager = canvasManager;
+        this.color = color;
     }
     load(grid){
         this.canvasManager.grid = grid;
@@ -10,7 +11,7 @@ class canvasLoader {
                 if (grid[y][x] == 1){
                     this.canvasManager.DomArrayPointer[y][x].style.backgroundColor = "black";
                 } else {
-                    this.canvasManager.DomArrayPointer[y][x].style.backgroundColor = "gray";
+                    this.canvasManager.DomArrayPointer[y][x].style.backgroundColor = this.color;
                 }
             }
         }

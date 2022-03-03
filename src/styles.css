@@ -1,35 +1,64 @@
 :root {
+    position: absolute;
+    background-color: gray;
 }
 
-h2 {
-    text-align: center;
+
+* {
+    font-family: sans-serif;
 }
+/* button navbar */
 
 
-
-.holder {
-    display: flex;
-    flex-direction: row;
-}
-.block {
-    display: flex;
-    flex-direction: column;
-    background: gray;
-    width: var(--width);
-    height: var(--height);
-    position: relative;
-    z-index: 1;
+.generate {
+    margin-top: 0;
+    left: 0;
+    margin: 0;
+    padding: 15px;
 }
 
 .generate * {
-    display: inline-block;
+    margin: 5px;
 }
-.main {
-    display: flex;
+
+.generate .seperator #update-density input {
+    border: 1px solid black;
+    background-color: lightgray;
+    padding: 3px;
 }
+
+.seperator {
+    background-color: darkgray;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.generate button {
+    margin: 10px;
+    margin-right: 0px;
+    height: 30px;
+    padding: 5px;
+    width: 110px;
+
+    background-color: #3498DB;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+.generate button:hover {
+    background-color: #2980B9;
+}
+
+
+
+
+/* the left documents */
+
 #documents {
-    width: 20%;
-    Overflow-y: scroll;
+    width: 14%;
+    /* Overflow-y: scroll; */
     height: 80vh;
 }
 
@@ -57,13 +86,13 @@ h2 {
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
 }
-#documents div .name::before {
+#documents div .delete .blocker {
     content: "";
     position: absolute;
     width: 1px;
     height: 35px;
     background-color: black;
-    margin-left: 8.5%;
+    margin-left: -10px;
 }
 #documents div .name {
     display: flex;
@@ -88,6 +117,28 @@ h2 {
     background-color: #2980B9;
 }
 
+/* simulation */
+
+.holder {
+    display: flex;
+    flex-direction: row;
+}
+.block {
+    display: flex;
+    flex-direction: column;
+    background: rgb(184, 184, 184);
+    width: var(--width);
+    height: var(--height);
+    position: relative;
+    z-index: 1;
+}
+
+.generate * {
+    display: inline-block;
+}
+.main {
+    display: flex;
+}
 
 .container {
     position: relative;
@@ -111,3 +162,47 @@ h2 {
     opacity: 0;
     z-index: 1;
 }
+
+
+/* tooltip */
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 10;
+    top: 130%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    font-size: 12px;
+  }
+  
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  

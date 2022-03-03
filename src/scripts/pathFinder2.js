@@ -2,11 +2,13 @@ import logicTread from "./logicTread";
 import findShortestPath from "./findShortestPath";
 
 class pathFinder {
-    constructor(canvasManager) {
+    constructor(canvasManager, coloredLines, color) {
         this.canvasManager = canvasManager;
         this.treads = [];
-        this.shortest = new findShortestPath(canvasManager);
+        this.shortest = new findShortestPath(canvasManager, coloredLines, color);
         this.running = false;
+        this.coloredLines = coloredLines;
+        this.color = color;
     }
     init() {
         this.running = true;
@@ -26,7 +28,7 @@ class pathFinder {
             for (let x=0; x < this.canvasManager.width; x++){
                 if (this.canvasManager.grid[y][x] !== 1) {
                     this.canvasManager.grid[y][x] = 0;
-                    this.canvasManager.DomArrayPointer[y][x].style.backgroundColor = "gray";
+                    this.canvasManager.DomArrayPointer[y][x].style.backgroundColor = this.color;
                 }
             }
         }
@@ -44,7 +46,8 @@ class pathFinder {
             fromTread,
             fromTreadAt,
             addFirst,
-            init
+            init,
+            this.coloredLines
         ));
     }
     step() {
@@ -83,7 +86,7 @@ class pathFinder {
         return found;
     }
     findShortestPath(){
-        this.shortest.find(this.treads);
+        return this.shortest.find(this.treads);
     }
 }
 

@@ -1,15 +1,19 @@
 
 class findShortestPath {
-    constructor(canvasManager){
+    constructor(canvasManager, coloredLines, color){
         this.canvasManager = canvasManager;
+        this.coloredLines = coloredLines;
+        this.color = color;
     }
     find(treads){
-        console.log("finding ...");
-        let points = this.getBottomPoints(treads);
+        let bottomPoints = this.getBottomPoints(treads);
         
-        let paths = this.resolvePaths(points);
-        console.log(paths)
+        let topPoints = this.getTopPoints(treads);
+
+        let paths = this.resolvePaths(bottomPoints);
         this.clearAndWrite(paths);
+
+        return {top: topPoints, bottom: bottomPoints};
     }
     clearAndWrite(paths){
         // clear
@@ -17,13 +21,12 @@ class findShortestPath {
             for (let x=0; x < this.canvasManager.width; x++){
                 if (this.canvasManager.grid[y][x] !== 1) {
                     this.canvasManager.grid[y][x] = 0;
-                    this.canvasManager.DomArrayPointer[y][x].style.backgroundColor = "gray";
+                    this.canvasManager.DomArrayPointer[y][x].style.backgroundColor = this.color;
                 }
             }
         }
 
         // write
-        console.log(paths);
         paths.forEach(path => {
             let color = this.getRandomColor();
             path.forEach(dot => {
@@ -32,10 +35,14 @@ class findShortestPath {
         })
     }
     getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
+        if (this.coloredLines.state) {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+            }
+        } else {
+            var color = "blue";
         }
         return color;
       }
@@ -48,17 +55,14 @@ class findShortestPath {
             let at = 0;
             
             path.push(...tr.history);
-            console.log(point.first)
             if (!point.first){
                 at = tr.fromTreadAt;
                 tr = tr.fromTread;
                 while (!end) {
-                    console.log(tr.history.slice(0, at));
                     for (let i=0; i< at; i++) {
                         path.push(tr.history[i]);
                     }
                     if (tr.history.length == 1){
-                        console.log("uwu")
                     }
                     if (tr.first){
                         end = true;
@@ -77,6 +81,17 @@ class findShortestPath {
         treads.forEach(tread => {
             if (tread.history.length > 0) {
                 if (tread.history[tread.history.length-1].y == this.canvasManager.height-1) {
+                    points.push(tread);
+                }
+            }
+        })
+        return points;
+    }
+    getTopPoints(treads) {
+        let points = [];
+        treads.forEach(tread => {
+            if (tread.history.length > 0) {
+                if (tread.history[tread.history.length-1].y == 0) {
                     points.push(tread);
                 }
             }
